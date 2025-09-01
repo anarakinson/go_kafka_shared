@@ -9,7 +9,9 @@ import (
 	"go.uber.org/zap"
 )
 
-// отправка с ретраем
+// SendWithRetry - отправка с ретраем
+// принимает кафка-продюсера, сообщение, количество ретраев
+// возвращает ошибку или нил
 func SendWithRetry(producer sarama.SyncProducer, message *sarama.ProducerMessage, maxRetries int) (int32, int64, error) {
 	var err error
 	for attempt := 1; attempt <= maxRetries; attempt++ {
