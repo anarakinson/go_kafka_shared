@@ -2,10 +2,9 @@ package kafka_helpers
 
 import (
 	"errors"
+	"log/slog"
 
 	"github.com/IBM/sarama"
-	"github.com/anarakinson/go_stonks/stonks_shared/pkg/logger"
-	"go.uber.org/zap"
 )
 
 var (
@@ -23,7 +22,7 @@ func CreateTopic(brokers []string, topicName string) error {
 		sarama.NewConfig(),
 	)
 	if err != nil {
-		logger.Log.Error("Error creating sarama admin client", zap.Error(err))
+		slog.Error("Error creating sarama admin client", "error", err)
 		return ErrCreateAdmin
 	}
 	defer admin.Close()
@@ -31,14 +30,14 @@ func CreateTopic(brokers []string, topicName string) error {
 	// получаем список существующих топиков
 	topics, err := admin.ListTopics()
 	if err != nil {
-		logger.Log.Error("Error listing topics", zap.Error(err))
+		slog.Error("Error listing topics", "error", err)
 		return ErrListTopics
 	}
 
 	// проверяем существование топика
 	_, exists := topics[topicName]
 	if exists {
-		logger.Log.Info("Topic already exists", zap.String("topic name", topicName))
+		slog.Info("Topic already exists", "topic name", topicName)
 		return ErrTopicExists
 	}
 
@@ -53,7 +52,7 @@ func CreateTopic(brokers []string, topicName string) error {
 		false,
 	)
 	if err != nil {
-		logger.Log.Error("Error creating topic", zap.String("topic name", topicName), zap.Error(err))
+		slog.Error("Error creating topic", "topic name", topicName, "error", err)
 		return ErrCreateTopic
 	}
 
